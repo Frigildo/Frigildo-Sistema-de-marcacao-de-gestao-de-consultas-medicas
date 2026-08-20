@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="footer">
+
+    <footer class="main-footer">
+        <strong>Centro de Saúde Dream Sant'Egídio</strong>
+        <div class="float-right d-none d-sm-inline-block">
+            <b>Versão</b> 1.0.0
+        </div>
+    </footer>
+
+    <script th:src="@{/adminlte/plugins/jquery/jquery.min.js}"></script>
+    <script th:src="@{/adminlte/plugins/jquery-ui/jquery-ui.min.js}"></script>
+    <script>$.widget.bridge('uibutton', $.ui.button)</script>
+    <script th:src="@{/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/adminlte/plugins/chart.js/Chart.min.js}"></script>
+    <script th:src="@{/adminlte/plugins/moment/moment.min.js}"></script>
+    <script th:src="@{/adminlte/plugins/daterangepicker/daterangepicker.js}"></script>
+    <script th:src="@{/adminlte/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js}"></script>
+    <script th:src="@{/adminlte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js}"></script>
+    <script th:src="@{/adminlte/dist/js/adminlte.js}"></script>
+
+</th:block>
+</html>

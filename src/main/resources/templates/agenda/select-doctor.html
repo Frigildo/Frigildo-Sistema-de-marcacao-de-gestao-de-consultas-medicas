@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Seleccionar Médico',
+          pageTitle='Seleccionar Médico',
+          activeMenu='agenda',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-user-md mr-2"></i>
+                Seleccionar Médico
+            </h3>
+            <div class="card-tools">
+                <form th:action="@{/agenda/select-doctor}"
+                      method="get">
+                    <div class="input-group input-group-sm">
+                        <input type="text"
+                               name="search"
+                               class="form-control"
+                               th:value="${search}"
+                               placeholder="Pesquisar por nome...">
+                        <div class="input-group-append">
+                            <button type="submit"
+                                    class="btn btn-default">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <a th:if="${search != null}"
+                               th:href="@{/agenda/select-doctor}"
+                               class="btn btn-default">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Especialidade</th>
+                        <th>Nº Funcionário</th>
+                        <th>Acção</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="doctor : ${doctors}">
+                        <td th:text="${doctor.name}"></td>
+                        <td th:text="${doctor.specialtyName != null} ? ${doctor.specialtyName} : '—'">
+                        </td>
+                        <td th:text="${doctor.employeeNumber}">
+                        </td>
+                        <td>
+                            <a th:href="@{/agenda(doctorId=${doctor.id})}"
+                               class="btn btn-primary btn-sm">
+                                <i class="fas fa-check mr-1"></i>
+                                Seleccionar
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(doctors)}">
+                        <td colspan="4"
+                            class="text-center text-muted py-3">
+                            Nenhum médico encontrado
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <a th:href="@{/agenda}"
+       class="btn btn-secondary mt-2">
+        <i class="fas fa-arrow-left mr-1"></i>
+        Cancelar
+    </a>
+
+</th:block>
+</html>

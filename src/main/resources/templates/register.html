@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Registar | Sistema</title>
+
+	<link rel="stylesheet"
+		href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+	<link rel="stylesheet" th:href="@{/adminlte/plugins/fontawesome-free/css/all.min.css}">
+	<link rel="stylesheet" th:href="@{/adminlte/dist/css/adminlte.min.css}">
+</head>
+
+<body class="hold-transition register-page">
+	<div class="register-box">
+
+		<!-- Logo -->
+		<div class="register-logo">
+			<b>Centro de Saúde</b> Dream
+		</div>
+
+		<div class="card">
+			<div class="card-body register-card-body">
+
+				<p class="login-box-msg">
+					Criar nova conta de Paciente
+				</p>
+
+				<!-- Erro -->
+				<div th:if="${errorMessage}" class="alert alert-danger
+                        alert-dismissible fade show">
+					<button type="button" class="close" data-dismiss="alert">
+						<span>&times;</span>
+					</button>
+					<i class="fas fa-exclamation-triangle mr-2"></i>
+					<span th:text="${errorMessage}"></span>
+				</div>
+
+				<form th:action="@{/register}" th:object="${registerDTO}" method="post" id="registerForm">
+
+					<!-- Nome -->
+					<div class="input-group mb-3">
+						<input type="text" class="form-control" th:field="*{name}" placeholder="Nome completo" required>
+						<div class="input-group-append">
+							<div class="input-group-text">
+								<span class="fas fa-user"></span>
+							</div>
+						</div>
+					</div>
+
+					<!-- Email -->
+					<div class="input-group mb-3">
+						<input type="email" class="form-control" th:field="*{email}" placeholder="Email" required>
+						<div class="input-group-append">
+							<div class="input-group-text">
+								<span class="fas fa-envelope"></span>
+							</div>
+						</div>
+					</div>
+
+					<!-- Password -->
+					<div class="input-group mb-3">
+						<input type="password" class="form-control" th:field="*{password}" id="password"
+							placeholder="Password" required>
+						<div class="input-group-append">
+							<div class="input-group-text">
+								<span class="fas fa-lock"></span>
+							</div>
+						</div>
+					</div>
+
+					<!-- Confirmar Password -->
+					<div class="input-group mb-2">
+						<input type="password" class="form-control" th:field="*{confirmPassword}" id="confirmPassword"
+							placeholder="Confirmar password" required>
+						<div class="input-group-append">
+							<div class="input-group-text">
+								<span class="fas fa-lock"></span>
+							</div>
+						</div>
+					</div>
+					<small id="passwordError" class="text-danger mb-3 d-block" style="display:none !important;">
+						<i class="fas fa-exclamation-triangle mr-1"></i>
+						As passwords não coincidem!
+					</small>
+
+					<!-- Data de Nascimento -->
+					<div class="input-group mb-3">
+						<input type="date" class="form-control" th:field="*{dateOfBirth}" th:max="${#temporals.format(
+               T(java.time.LocalDate).now(),
+               'yyyy-MM-dd')}" required>
+						<div class="input-group-append">
+							<div class="input-group-text">
+								<span class="fas fa-birthday-cake"></span>
+							</div>
+						</div>
+					</div>
+
+					<!-- Género -->
+					<div class="input-group mb-3">
+						<select class="form-control" th:field="*{gender}" required>
+							<option value="">
+								Seleccione o género
+							</option>
+							<option th:each="g : ${genders}" th:value="${g}" th:text="${g}">
+							</option>
+						</select>
+						<div class="input-group-append">
+							<div class="input-group-text">
+								<span class="fas fa-venus-mars"></span>
+							</div>
+						</div>
+					</div>
+
+					<!-- Telefone -->
+					<div class="input-group mb-3">
+						<input type="text" class="form-control" th:field="*{phone}" placeholder="Telefone" required>
+						<div class="input-group-append">
+							<div class="input-group-text">
+								<span class="fas fa-phone"></span>
+							</div>
+						</div>
+					</div>
+
+					<!-- Morada -->
+					<div class="input-group mb-3">
+						<input type="text" class="form-control" th:field="*{address}" placeholder="Morada (opcional)">
+						<div class="input-group-append">
+							<div class="input-group-text">
+								<span class="fas fa-map-marker-alt"></span>
+							</div>
+						</div>
+					</div>
+
+					<!-- Botão -->
+					<div class="row">
+						<div class="col-12">
+							<button type="submit" class="btn btn-primary btn-block">
+								<i class="fas fa-user-plus mr-2"></i>
+								Criar Conta
+							</button>
+						</div>
+					</div>
+
+				</form>
+
+				<!-- Link para login -->
+				<div class="mt-3 text-center">
+					<a th:href="@{/login}">
+						<i class="fas fa-sign-in-alt mr-1"></i>
+						Já tem conta? Faça login
+					</a>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+
+	<script th:src="@{/adminlte/plugins/jquery/jquery.min.js}"></script>
+	<script th:src="@{/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
+	<script th:src="@{/adminlte/dist/js/adminlte.js}"></script>
+
+	<script>
+		// Feedback em tempo real
+		document.getElementById('confirmPassword')
+			.addEventListener('input', function () {
+				var pass = document
+					.getElementById('password').value;
+				var error = document
+					.getElementById('passwordError');
+				if (this.value === pass) {
+					error.style.display = 'none';
+					this.classList.remove('is-invalid');
+					this.classList.add('is-valid');
+				} else {
+					error.style.display = 'block';
+					this.classList.add('is-invalid');
+					this.classList.remove('is-valid');
+				}
+			});
+
+		// Bloqueia submit se passwords diferentes
+		document.getElementById('registerForm')
+			.addEventListener('submit', function (e) {
+				var pass = document
+					.getElementById('password').value;
+				var confirm = document
+					.getElementById('confirmPassword')
+					.value;
+				if (pass !== confirm) {
+					e.preventDefault();
+					document
+						.getElementById('passwordError')
+						.style.display = 'block';
+				}
+			});
+	</script>
+
+</body>
+
+</html>

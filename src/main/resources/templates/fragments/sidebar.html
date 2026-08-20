@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<aside th:fragment="sidebar"
+       class="main-sidebar sidebar-dark-primary elevation-4">
+
+    <a th:href="@{/dashboard}" class="brand-link">
+        <img th:src="@{/adminlte/dist/img/SantEgidio.jpeg}"
+             alt="Logo"
+             class="brand-image img-circle elevation-3"
+             style="opacity: .8">
+        <span class="brand-text font-weight-light">
+            Dream Sant'Egídio
+        </span>
+    </a>
+
+    <div class="sidebar">
+
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                <i class="fas fa-user-circle fa-2x
+                          text-white ml-1 mt-1"></i>
+            </div>
+            <div class="info">
+                <a href="#" class="d-block"
+                   th:text="${#authentication?.name}">
+                </a>
+            </div>
+        </div>
+
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column"
+                data-widget="treeview"
+                role="menu"
+                data-accordion="false">
+
+                <!-- Dashboard -->
+                <li class="nav-item">
+                    <a th:href="@{/dashboard}"
+                       th:classappend="${activeMenu == 'dashboard'} ? ' active'"
+                       class="nav-link">
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+
+                <!-- ADMINISTRADOR -->
+                <th:block th:if="${userRole == 'ADMINISTRADOR'}">
+                    <li class="nav-header">CLÍNICA</li>
+                    <li class="nav-item">
+                        <a th:href="@{/patients}"
+                           th:classappend="${activeMenu == 'patients'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-procedures"></i>
+                            <p>Pacientes</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/consultations}"
+                           th:classappend="${activeMenu == 'consultations'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-calendar-check"></i>
+                            <p>Consultas</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/attendances}"
+                           th:classappend="${activeMenu == 'attendances'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-stethoscope"></i>
+                            <p>Atendimentos</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/exams}"
+                           th:classappend="${activeMenu == 'exams'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-flask"></i>
+                            <p>Exames</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/counselings}"
+                           th:classappend="${activeMenu == 'counselings'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-comments"></i>
+                            <p>Aconselhamentos</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/presences}"
+                           th:classappend="${activeMenu == 'presences'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-clipboard-check"></i>
+                            <p>Presenças</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/specialties}"
+                           th:classappend="${activeMenu == 'specialties'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-briefcase-medical"></i>
+                            <p>Especialidades</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/agenda}"
+                           th:classappend="${activeMenu == 'agenda'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-calendar-alt"></i>
+                            <p>Agenda</p>
+                        </a>
+                    </li>
+                    <li class="nav-header">ADMINISTRAÇÃO</li>
+                    <li class="nav-item">
+                        <a th:href="@{/users}"
+                           th:classappend="${activeMenu == 'users'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-users-cog"></i>
+                            <p>Utilizadores</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/administrators}"
+                           th:classappend="${activeMenu == 'administrators'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-user-shield"></i>
+                            <p>Administradores</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/doctors}"
+                           th:classappend="${activeMenu == 'doctors'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-user-md"></i>
+                            <p>Médicos</p>
+                        </a>
+                    </li>
+                </th:block>
+
+                <!-- MÉDICO -->
+                <th:block th:if="${userRole == 'MEDICO'}">
+                    <li class="nav-header">MINHA ÁREA</li>
+                    <li class="nav-item">
+                        <a th:href="@{/consultations}"
+                           th:classappend="${activeMenu == 'consultations'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-calendar-check"></i>
+                            <p>Consultas</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/attendances}"
+                           th:classappend="${activeMenu == 'attendances'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-stethoscope"></i>
+                            <p>Atendimentos</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/exams}"
+                           th:classappend="${activeMenu == 'exams'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-flask"></i>
+                            <p>Exames</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/counselings}"
+                           th:classappend="${activeMenu == 'counselings'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-comments"></i>
+                            <p>Aconselhamentos</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/presences}"
+                           th:classappend="${activeMenu == 'presences'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-clipboard-check"></i>
+                            <p>Presenças</p>
+                        </a>
+                    </li>
+                </th:block>
+
+                <!-- PACIENTE -->
+                <th:block th:if="${userRole == 'PACIENTE'}">
+                    <li class="nav-header">MEU ESPAÇO</li>
+                    <li class="nav-item">
+                        <a th:href="@{/patients/profile}"
+                           th:classappend="${activeMenu == 'profile'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-user"></i>
+                            <p>Meu Perfil</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/patients/consultations}"
+                           th:classappend="${activeMenu == 'myConsultations'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-calendar-check"></i>
+                            <p>Minhas Consultas</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/available-slots}"
+                           th:classappend="${activeMenu == 'availableSlots'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-calendar-plus"></i>
+                            <p>Marcar Consulta</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/patients/history}"
+                           th:classappend="${activeMenu == 'history'} ? ' active'"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-history"></i>
+                            <p>Histórico Clínico</p>
+                        </a>
+                    </li>
+                </th:block>
+
+                <!-- Logout -->
+                <li class="nav-item mt-3">
+                    <form th:action="@{/logout}"
+                          method="post">
+                        <button type="submit"
+                                class="nav-link btn btn-link
+                                       text-left w-100"
+                                style="color: rgba(255,255,255,0.5);">
+                            <i class="nav-icon fas fa-sign-out-alt"></i>
+                            <p>Sair</p>
+                        </button>
+                    </form>
+                </li>
+
+            </ul>
+        </nav>
+
+    </div>
+</aside>
+</html>

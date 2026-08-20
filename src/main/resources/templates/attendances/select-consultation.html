@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Seleccionar Consulta',
+          pageTitle='Seleccionar Consulta',
+          activeMenu='attendances',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-calendar-check mr-2"></i>
+                Seleccionar Consulta
+            </h3>
+            <div class="card-tools">
+                <form th:action="@{/attendances/select-consultation}"
+                      method="get">
+                    <div class="input-group input-group-sm">
+                        <input type="text"
+                               name="search"
+                               class="form-control"
+                               th:value="${search}"
+                               placeholder="Pesquisar por nome do paciente...">
+                        <div class="input-group-append">
+                            <button type="submit"
+                                    class="btn btn-default">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <a th:if="${search != null}"
+                               th:href="@{/attendances/select-consultation}"
+                               class="btn btn-default">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Paciente</th>
+                        <th>Médico</th>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Estado</th>
+                        <th>Acção</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${consultations}">
+                        <td th:text="${c.patientName}"></td>
+                        <td th:text="${c.doctorName}"></td>
+                        <td th:text="${#temporals.format(c.date, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${#temporals.format(c.time, 'HH:mm')}"></td>
+                        <td>
+                            <span th:if="${c.status.name() == 'AGENDADA'}"
+                                  class="badge badge-warning"
+                                  th:text="${c.status}">
+                            </span>
+                            <span th:if="${c.status.name() == 'CONCLUIDA'}"
+                                  class="badge badge-success"
+                                  th:text="${c.status}">
+                            </span>
+                            <span th:if="${c.status.name() == 'CANCELADA'}"
+                                  class="badge badge-danger"
+                                  th:text="${c.status}">
+                            </span>
+                        </td>
+                        <td>
+                            <!-- Só permite seleccionar AGENDADA -->
+                            <a th:if="${c.status.name() == 'AGENDADA'}"
+                               th:href="@{/attendances/new(consultationId=${c.id})}"
+                               class="btn btn-primary btn-sm">
+                                <i class="fas fa-check mr-1"></i>
+                                Seleccionar
+                            </a>
+                            <span th:unless="${c.status.name() == 'AGENDADA'}"
+                                  class="text-muted small">
+                                <i class="fas fa-ban mr-1"></i>
+                                Indisponível
+                            </span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(consultations)}">
+                        <td colspan="6"
+                            class="text-center text-muted py-3">
+                            Nenhuma consulta encontrada
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <small class="text-muted">
+                Total:
+                <strong th:text="${#lists.size(consultations)}"></strong>
+                consultas
+            </small>
+        </div>
+    </div>
+
+    <a th:href="@{/attendances/new}"
+       class="btn btn-secondary mt-2">
+        <i class="fas fa-arrow-left mr-1"></i>
+        Cancelar
+    </a>
+
+</th:block>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Paciente',
+          pageTitle=${patientId != null} ? 'Editar Paciente' : 'Novo Paciente',
+          activeMenu='patients',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title"
+                th:text="${patientId != null} ?
+                    'Editar Paciente' : 'Novo Paciente'">
+            </h3>
+        </div>
+        <div class="card-body">
+
+            <div th:if="${errorMessage}"
+                 class="alert alert-danger alert-dismissible">
+                <button type="button" class="close"
+                        data-dismiss="alert">&times;</button>
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <!-- CRIAR -->
+            <form th:if="${patientId == null}"
+                  th:action="@{/patients/save}"
+                  th:object="${patientDTO}"
+                  method="post">
+
+                <!-- 1º — Utilizador -->
+                <div class="form-group">
+                    <label>Utilizador (Login)
+                        <span class="text-danger">*</span>
+                    </label>
+                    <div th:if="${selectedUser == null}">
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control"
+                                   value="Nenhum utilizador seleccionado"
+                                   readonly>
+                            <div class="input-group-append">
+                                <a th:href="@{/patients/select-user}"
+                                   class="btn btn-outline-primary">
+                                    <i class="fas fa-search mr-1"></i>
+                                    Escolher
+                                </a>
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            Seleccione um utilizador
+                            com perfil PACIENTE
+                        </small>
+                    </div>
+                    <div th:if="${selectedUser != null}">
+                        <input type="hidden"
+                               th:field="*{userId}">
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${selectedUser.email}"
+                                   readonly>
+                            <div class="input-group-append">
+                                <a th:href="@{/patients/select-user}"
+                                   class="btn btn-outline-secondary">
+                                    <i class="fas fa-exchange-alt mr-1"></i>
+                                    Alterar
+                                </a>
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            <i class="fas fa-check-circle text-success mr-1"></i>
+                            Perfil:
+                            <span th:text="${selectedUser.profile}"></span>
+                        </small>
+                    </div>
+                </div>
+
+                <!-- 2º — Nome + Data -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Nome
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{name}"
+                                   placeholder="Nome completo"
+                                   required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Data de Nascimento
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="date"
+                                   class="form-control"
+                                   th:field="*{dateOfBirth}"
+                                   th:max="${#temporals.format(T(java.time.LocalDate).now(), 'yyyy-MM-dd')}"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3º — Género + Telefone -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Género
+                                <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-control"
+                                    th:field="*{gender}"
+                                    required>
+                                <option value="">
+                                    Seleccione o género
+                                </option>
+                                <option th:each="g : ${genders}"
+                                        th:value="${g}"
+                                        th:text="${g}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Telefone
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{phone}"
+                                   placeholder="9 dígitos ex: 841234567"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4º — Morada -->
+                <div class="form-group">
+                    <label>Morada</label>
+                    <input type="text"
+                           class="form-control"
+                           th:field="*{address}"
+                           placeholder="Morada completa">
+                </div>
+
+                <div class="card-footer">
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="fas fa-save mr-1"></i>
+                        Salvar
+                    </button>
+                    <a th:href="@{/patients}"
+                       class="btn btn-secondary ml-2">
+                        <i class="fas fa-times mr-1"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+
+            <!-- EDITAR -->
+            <form th:if="${patientId != null}"
+                  th:action="@{/patients/{id}/update(id=${patientId})}"
+                  th:object="${patientDTO}"
+                  method="post">
+
+                <!-- 1º — Utilizador só leitura -->
+                <div class="form-group">
+                    <label>Utilizador (Login)</label>
+                    <input type="text"
+                           class="form-control"
+                           th:value="${patient.userEmail}"
+                           readonly>
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        O utilizador não pode ser alterado
+                    </small>
+                </div>
+
+                <!-- 2º — Nome + Data -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Nome
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{name}"
+                                   placeholder="Nome completo"
+                                   required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Data de Nascimento
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="date"
+                                   class="form-control"
+                                   th:field="*{dateOfBirth}"
+                                   th:max="${#temporals.format(T(java.time.LocalDate).now(), 'yyyy-MM-dd')}"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3º — Género + Telefone -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Género
+                                <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-control"
+                                    th:field="*{gender}"
+                                    required>
+                                <option th:each="g : ${genders}"
+                                        th:value="${g}"
+                                        th:text="${g}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Telefone
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:field="*{phone}"
+                                   placeholder="9 dígitos ex: 841234567"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4º — Morada -->
+                <div class="form-group">
+                    <label>Morada</label>
+                    <input type="text"
+                           class="form-control"
+                           th:field="*{address}"
+                           placeholder="Morada completa">
+                </div>
+
+                <div class="card-footer">
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="fas fa-save mr-1"></i>
+                        Actualizar
+                    </button>
+                    <a th:href="@{/patients}"
+                       class="btn btn-secondary ml-2">
+                        <i class="fas fa-times mr-1"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</th:block>
+</html>

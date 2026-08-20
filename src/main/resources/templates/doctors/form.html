@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Médico',
+          pageTitle=${doctorId != null} ? 'Editar Médico' : 'Novo Médico',
+          activeMenu='doctors',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title"
+                th:text="${doctorId != null} ?
+                    'Editar Médico' : 'Novo Médico'">
+            </h3>
+        </div>
+        <div class="card-body">
+
+            <!-- Mensagem de erro -->
+            <div th:if="${errorMessage}"
+                 class="alert alert-danger alert-dismissible">
+                <button type="button" class="close"
+                        data-dismiss="alert">&times;</button>
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <!-- ==================== -->
+            <!-- FORMULÁRIO CRIAR     -->
+            <!-- ==================== -->
+            <form th:if="${doctorId == null}"
+                  th:action="@{/doctors/save}"
+                  th:object="${doctorDTO}"
+                  method="post">
+
+                <!-- 1º — Selecção de utilizador -->
+                <div class="form-group">
+                    <label>Utilizador (Login)
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <!-- Nenhum utilizador seleccionado -->
+                    <div th:if="${selectedUser == null}">
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control"
+                                   value="Nenhum utilizador seleccionado"
+                                   readonly>
+                            <div class="input-group-append">
+                                <a th:href="@{/doctors/select-user}"
+                                   class="btn btn-outline-primary">
+                                    <i class="fas fa-search mr-1"></i>
+                                    Escolher
+                                </a>
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            Seleccione um utilizador com perfil MEDICO
+                        </small>
+                    </div>
+
+                    <!-- Utilizador seleccionado -->
+                    <div th:if="${selectedUser != null}">
+                        <input type="hidden"
+                               th:field="*{userId}">
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${selectedUser.email}"
+                                   readonly>
+                            <div class="input-group-append">
+                                <a th:href="@{/doctors/select-user}"
+                                   class="btn btn-outline-secondary">
+                                    <i class="fas fa-exchange-alt mr-1"></i>
+                                    Alterar
+                                </a>
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            <i class="fas fa-check-circle text-success mr-1"></i>
+                            Perfil:
+                            <span th:text="${selectedUser.profile}"></span>
+                        </small>
+                    </div>
+                </div>
+
+                <!-- 2º — Nome -->
+                <div class="form-group">
+                    <label>Nome
+                        <span class="text-danger">*</span>
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''"
+                           th:field="*{name}"
+                           placeholder="Nome completo"
+                           required>
+                    <div class="invalid-feedback"
+                         th:if="${#fields.hasErrors('name')}"
+                         th:errors="*{name}">
+                    </div>
+                </div>
+
+                <!-- 3º — Telefone -->
+                <div class="form-group">
+                    <label>Telefone
+                        <span class="text-danger">*</span>
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           th:classappend="${#fields.hasErrors('cellPhone')} ? 'is-invalid' : ''"
+                           th:field="*{cellPhone}"
+                           placeholder="9 dígitos ex: 841234567"
+                           required>
+                    <div class="invalid-feedback"
+                         th:if="${#fields.hasErrors('cellPhone')}"
+                         th:errors="*{cellPhone}">
+                    </div>
+                </div>
+
+                <div class="card-footer px-0 pb-0">
+                    <button type="submit"
+                            class="btn btn-primary"
+                            th:disabled="${selectedUser == null}">
+                        <i class="fas fa-save mr-1"></i>
+                        Salvar
+                    </button>
+                    <a th:href="@{/doctors}"
+                       class="btn btn-secondary ml-2">
+                        <i class="fas fa-times mr-1"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+
+            <!-- ==================== -->
+            <!-- FORMULÁRIO EDITAR    -->
+            <!-- ==================== -->
+            <form th:if="${doctorId != null}"
+                  th:action="@{/doctors/{id}/update(id=${doctorId})}"
+                  th:object="${doctorDTO}"
+                  method="post">
+
+                <!-- 1º — Utilizador (só leitura) -->
+                <div class="form-group">
+                    <label>Utilizador (Login)</label>
+                    <input type="text"
+                           class="form-control"
+                           th:value="${doctor.userEmail}"
+                           readonly>
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        O utilizador não pode ser alterado
+                    </small>
+                </div>
+
+                <!-- 2º — Nº Funcionário (só leitura) -->
+                <div class="form-group">
+                    <label>Nº Funcionário</label>
+                    <input type="text"
+                           class="form-control"
+                           th:value="${doctor.employeeNumber}"
+                           readonly>
+                </div>
+
+                <!-- 3º — Nome -->
+                <div class="form-group">
+                    <label>Nome
+                        <span class="text-danger">*</span>
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''"
+                           th:field="*{name}"
+                           placeholder="Nome completo"
+                           required>
+                    <div class="invalid-feedback"
+                         th:if="${#fields.hasErrors('name')}"
+                         th:errors="*{name}">
+                    </div>
+                </div>
+
+                <!-- 4º — Telefone -->
+                <div class="form-group">
+                    <label>Telefone
+                        <span class="text-danger">*</span>
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           th:classappend="${#fields.hasErrors('cellPhone')} ? 'is-invalid' : ''"
+                           th:field="*{cellPhone}"
+                           placeholder="9 dígitos ex: 841234567"
+                           required>
+                    <div class="invalid-feedback"
+                         th:if="${#fields.hasErrors('cellPhone')}"
+                         th:errors="*{cellPhone}">
+                    </div>
+                </div>
+
+                <div class="card-footer px-0 pb-0">
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="fas fa-save mr-1"></i>
+                        Actualizar
+                    </button>
+                    <a th:href="@{/doctors}"
+                       class="btn btn-secondary ml-2">
+                        <i class="fas fa-times mr-1"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</th:block>
+</html>

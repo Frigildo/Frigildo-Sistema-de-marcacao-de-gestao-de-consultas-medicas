@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Presenças',
+          pageTitle='Lista de Presenças',
+          activeMenu='presences',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+
+    <div th:if="${success}"
+         class="alert alert-success alert-dismissible fade show">
+        <button type="button" class="close"
+                data-dismiss="alert">&times;</button>
+        <i class="fas fa-check-circle mr-2"></i>
+        <span th:text="${success}"></span>
+    </div>
+    <div th:if="${error}"
+         class="alert alert-danger alert-dismissible fade show">
+        <button type="button" class="close"
+                data-dismiss="alert">&times;</button>
+        <i class="fas fa-exclamation-circle mr-2"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-clipboard-check mr-2"></i>
+                Presenças
+            </h3>
+            <div class="card-tools d-flex">
+
+                <form th:action="@{/presences}"
+                      method="get" class="mr-2">
+                    <div class="input-group input-group-sm">
+                        <select name="status"
+                                class="form-control">
+                            <option value="">
+                                Todos os estados
+                            </option>
+                            <option
+                                th:each="s : ${statuses}"
+                                th:value="${s}"
+                                th:text="${s}"
+                                th:selected="${s == selectedStatus}">
+                            </option>
+                        </select>
+                        <div class="input-group-append">
+                            <button type="submit"
+                                    class="btn btn-default">
+                                <i class="fas fa-filter"></i>
+                            </button>
+                            <a th:if="${selectedStatus != null}"
+                               th:href="@{/presences}"
+                               class="btn btn-default">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+
+                <a th:href="@{/presences/new}"
+                   class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus mr-1"></i>Nova
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+
+            <div th:if="${selectedStatus != null}"
+                 class="alert alert-info mb-3">
+                <i class="fas fa-filter mr-2"></i>
+                A filtrar por:
+                <strong th:text="${selectedStatus}"></strong>
+                <a th:href="@{/presences}"
+                   class="float-right">Limpar</a>
+            </div>
+
+            <table class="table table-bordered
+                          table-striped table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Paciente</th>
+                        <th>Médico</th>
+                        <th>Estado</th>
+                        <th>Justificação</th>
+                        <th>Acções</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${presences}">
+                        <td th:text="${p.id}"></td>
+                        <td th:text="${p.patientName}"></td>
+                        <td th:text="${p.doctorName}"></td>
+                        <td>
+                            <span th:text="${p.status}"
+                                  th:class="${p.status.name() == 'PRESENTE'} ? 'badge badge-success' : (${p.status.name() == 'AUSENTE'} ? 'badge badge-danger' : 'badge badge-warning')">
+                            </span>
+                        </td>
+                        <td th:text="${p.justification}"></td>
+                        <td>
+                            <a th:href="@{/presences/{id}/edit(id=${p.id})}"
+                               class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a th:href="@{/presences/{id}/delete(id=${p.id})}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Tem a certeza?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(presences)}">
+                        <td colspan="6"
+                            class="text-center text-muted">
+                            Nenhuma presença encontrada
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <small class="text-muted">
+                Total:
+                <strong th:text="${#lists.size(presences)}">
+                </strong>
+                presenças
+            </small>
+        </div>
+    </div>
+
+</th:block>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Resultado do Exame',
+          pageTitle='Anexar Resultado do Exame',
+          activeMenu='attendances',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-file-medical mr-2"></i>
+                Resultado do Exame
+            </h3>
+        </div>
+        <div class="card-body">
+
+            <!-- Info do exame -->
+            <div class="callout callout-info mb-4">
+                <h5>
+                    <i class="fas fa-flask mr-2"></i>
+                    <span th:text="${exam.type}"></span>
+                </h5>
+                <div class="row">
+                    <div class="col-md-4">
+                        <strong>Paciente:</strong>
+                        <span th:text="${exam.patientName}"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Médico:</strong>
+                        <span th:text="${exam.doctorName}"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Data:</strong>
+                        <span th:text="${#temporals.format(exam.date, 'dd/MM/yyyy')}"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ficheiro já anexado -->
+            <div th:if="${exam.fileName != null}"
+                 class="callout callout-success mb-4">
+                <h5>
+                    <i class="fas fa-paperclip mr-2"></i>
+                    Ficheiro Anexado
+                </h5>
+                <p class="mb-2">
+                    <i class="fas fa-file mr-1"></i>
+                    <span th:text="${exam.fileName}"></span>
+                </p>
+                <div class="d-flex">
+                    <!-- Ver PDF inline -->
+                    <a th:if="${exam.fileType != null and exam.fileType.contains('pdf')}"
+                       th:href="@{'/files/exams/' + ${exam.filePath.substring(exam.filePath.lastIndexOf('/') + 1)}}"
+                       target="_blank"
+                       class="btn btn-info btn-sm mr-2">
+                        <i class="fas fa-eye mr-1"></i>
+                        Ver PDF
+                    </a>
+                    <!-- Ver imagem inline -->
+                    <a th:if="${exam.fileType != null and exam.fileType.contains('image')}"
+                       th:href="@{'/files/exams/' + ${exam.filePath.substring(exam.filePath.lastIndexOf('/') + 1)}}"
+                       target="_blank"
+                       class="btn btn-info btn-sm mr-2">
+                        <i class="fas fa-image mr-1"></i>
+                        Ver Imagem
+                    </a>
+                    <!-- Download -->
+                    <a th:href="@{'/files/exams/' + ${exam.filePath.substring(exam.filePath.lastIndexOf('/') + 1)}}"
+                       download
+                       class="btn btn-secondary btn-sm">
+                        <i class="fas fa-download mr-1"></i>
+                        Download
+                    </a>
+                </div>
+            </div>
+
+            <form th:action="@{/attendances/{aId}/exams/{eId}/result(aId=${attendanceId}, eId=${examId})}"
+                  th:object="${examDTO}"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                <!-- Tipo -->
+                <div class="form-group">
+                    <label>Tipo de Exame
+                        <span class="text-danger">*</span>
+                    </label>
+                    <select class="form-control"
+                            th:field="*{type}"
+                            required>
+                        <option value="">
+                            Seleccione o tipo
+                        </option>
+                        <option th:each="t : ${examTypes}"
+                                th:value="${t}"
+                                th:text="${t}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Data -->
+                <div class="form-group">
+                    <label>Data
+                        <span class="text-danger">*</span>
+                    </label>
+                    <input type="date"
+                           class="form-control"
+                           th:field="*{date}"
+                           required>
+                </div>
+
+                <!-- Resultado -->
+                <div class="form-group">
+                    <label>Resultado</label>
+                    <textarea class="form-control"
+                              th:field="*{result}"
+                              rows="4"
+                              placeholder="Descreva o resultado do exame">
+                    </textarea>
+                </div>
+
+                <!-- Upload ficheiro -->
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-paperclip mr-1"></i>
+                        Anexar Ficheiro
+                        <small class="text-muted">
+                            (PDF, JPG, PNG — Raio-X, etc)
+                        </small>
+                    </label>
+                    <div class="custom-file">
+                        <input type="file"
+                               class="custom-file-input"
+                               id="fileInput"
+                               name="file"
+                               accept=".pdf,.jpg,.jpeg,.png">
+                        <label class="custom-file-label"
+                               for="fileInput">
+                            Escolher ficheiro...
+                        </label>
+                    </div>
+                    <small class="text-muted mt-1 d-block">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Formatos aceites: PDF, JPG, PNG
+                    </small>
+                </div>
+
+                <div class="card-footer">
+                    <button type="submit"
+                            class="btn btn-success">
+                        <i class="fas fa-save mr-1"></i>
+                        Guardar Resultado
+                    </button>
+                    <a th:href="@{/attendances/{id}/edit(id=${attendanceId})}"
+                       class="btn btn-secondary ml-2">
+                        <i class="fas fa-times mr-1"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Preview do ficheiro seleccionado -->
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+    document.getElementById('fileInput')
+        .addEventListener('change', function(e) {
+            var fileName = e.target.files[0]
+                ? e.target.files[0].name
+                : 'Escolher ficheiro...';
+            document.querySelector(
+                '.custom-file-label')
+                .textContent = fileName;
+        });
+    /*]]>*/
+    </script>
+
+</th:block>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: base(
+          title='Consulta',
+          pageTitle=${consultationId != null} ? 'Editar Consulta' : 'Nova Consulta',
+          activeMenu='consultations',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+	<div class="card">
+		<div class="card-header">
+			<h3 class="card-title" th:text="${consultationId != null} ?
+                    'Editar Consulta' : 'Nova Consulta'">
+			</h3>
+		</div>
+		<div class="card-body">
+
+			<div th:if="${errorMessage}" class="alert alert-danger alert-dismissible">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<i class="fas fa-exclamation-circle mr-2"></i>
+				<span th:text="${errorMessage}"></span>
+			</div>
+
+			<!-- CRIAR -->
+			<form th:if="${consultationId == null}" th:action="@{/consultations/save}" th:object="${consultationDTO}"
+				method="post">
+
+				<!-- ← OBRIGATÓRIO — agendaId hidden -->
+				<input type="hidden" th:field="*{agendaId}">
+
+				<!-- Info do horário seleccionado -->
+				<div th:if="${slot != null}" class="callout callout-success mb-3">
+					<h5>
+						<i class="fas fa-calendar-check mr-2"></i>
+						Horário Seleccionado
+					</h5>
+					<p class="mb-0">
+						<strong>Data:</strong>
+						<span th:text="${#temporals.format(slot.date, 'dd/MM/yyyy')}"></span>
+						&nbsp;|&nbsp;
+						<strong>Início:</strong>
+						<span th:text="${#temporals.format(slot.startTime, 'HH:mm')}"></span>
+						&nbsp;|&nbsp;
+						<strong>Fim:</strong>
+						<span th:text="${#temporals.format(slot.endTime, 'HH:mm')}"></span>
+					</p>
+				</div>
+
+				<!-- 1º — Paciente -->
+				<div class="form-group">
+					<label>Paciente
+						<span class="text-danger">*</span>
+					</label>
+					<div th:if="${selectedPatient == null}">
+						<div class="input-group">
+							<input type="text" class="form-control" value="Nenhum paciente seleccionado" readonly>
+							<div class="input-group-append">
+								<a th:href="@{/consultations/select-patient}" class="btn btn-outline-primary">
+									<i class="fas fa-search mr-1"></i>
+									Escolher
+								</a>
+							</div>
+						</div>
+					</div>
+					<div th:if="${selectedPatient != null}">
+						<input type="hidden" th:field="*{patientId}">
+						<div class="input-group">
+							<input type="text" class="form-control"
+								th:value="${selectedPatient.name} + ' — ' + ${selectedPatient.patientNumber}" readonly>
+							<div class="input-group-append">
+								<a th:href="@{/consultations/select-patient}" class="btn btn-outline-secondary">
+									<i class="fas fa-exchange-alt mr-1"></i>
+									Alterar
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 2º — Médico -->
+				<div class="form-group">
+					<label>Médico
+						<span class="text-danger">*</span>
+					</label>
+					<div th:if="${selectedDoctor == null}">
+						<div class="input-group">
+							<input type="text" class="form-control" value="Nenhum médico seleccionado" readonly>
+							<div class="input-group-append">
+								<a th:href="@{/consultations/select-doctor(patientId=${consultationDTO.patientId})}"
+									class="btn btn-outline-primary">
+									<i class="fas fa-search mr-1"></i>
+									Escolher
+								</a>
+							</div>
+						</div>
+					</div>
+					<div th:if="${selectedDoctor != null}">
+						<input type="hidden" th:field="*{doctorId}">
+						<div class="input-group">
+							<input type="text" class="form-control" th:value="${selectedDoctor.name}" readonly>
+							<div class="input-group-append">
+								<a th:href="@{/consultations/select-doctor(patientId=${consultationDTO.patientId})}"
+									class="btn btn-outline-secondary">
+									<i class="fas fa-exchange-alt mr-1"></i>
+									Alterar
+								</a>
+							</div>
+						</div>
+						<small class="text-muted" th:if="${selectedDoctor.specialtyName != null}">
+							<i class="fas fa-briefcase-medical mr-1"></i>
+							<span th:text="${selectedDoctor.specialtyName}"></span>
+						</small>
+					</div>
+				</div>
+
+				<!-- 3º — Data + Hora -->
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>Data
+								<span class="text-danger">*</span>
+							</label>
+							<input type="date" class="form-control" th:field="*{date}" required>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>Hora
+								<span class="text-danger">*</span>
+							</label>
+							<input type="time" class="form-control" th:field="*{time}" required>
+						</div>
+					</div>
+				</div>
+
+				<!-- 4º — Estado -->
+				<div class="form-group">
+					<label>Estado
+						<span class="text-danger">*</span>
+					</label>
+					<select class="form-control" th:field="*{status}" required>
+						<option value="">
+							Seleccione o estado
+						</option>
+						<option th:each="s : ${statuses}" th:value="${s}" th:text="${s}">
+						</option>
+					</select>
+				</div>
+
+				<div class="card-footer">
+					<button type="submit" class="btn btn-primary">
+						<i class="fas fa-save mr-1"></i>
+						Salvar
+					</button>
+					<a th:href="@{/consultations}" class="btn btn-secondary ml-2">
+						<i class="fas fa-times mr-1"></i>
+						Cancelar
+					</a>
+				</div>
+			</form>
+
+			<!-- EDITAR -->
+			<form th:if="${consultationId != null}" th:action="@{/consultations/{id}/update(id=${consultationId})}"
+				th:object="${consultationDTO}" method="post">
+
+				<!-- 1º — Paciente só leitura -->
+				<div class="form-group">
+					<label>Paciente</label>
+					<input type="text" class="form-control" th:value="${consultation.patientName}" readonly>
+					<small class="text-muted">
+						<i class="fas fa-info-circle mr-1"></i>
+						O paciente não pode ser alterado
+					</small>
+				</div>
+
+				<!-- 2º — Médico só leitura -->
+				<div class="form-group">
+					<label>Médico</label>
+					<input type="text" class="form-control" th:value="${consultation.doctorName}" readonly>
+					<small class="text-muted">
+						<i class="fas fa-info-circle mr-1"></i>
+						O médico não pode ser alterado
+					</small>
+				</div>
+
+				<!-- 3º — Data + Hora -->
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>Data
+								<span class="text-danger">*</span>
+							</label>
+							<input type="date" class="form-control" th:field="*{date}" required>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label>Hora
+								<span class="text-danger">*</span>
+							</label>
+							<input type="time" class="form-control" th:field="*{time}" required>
+						</div>
+					</div>
+				</div>
+
+				<!-- 4º — Estado -->
+				<div class="form-group">
+					<label>Estado
+						<span class="text-danger">*</span>
+					</label>
+					<select class="form-control" th:field="*{status}" required>
+						<option th:each="s : ${statuses}" th:value="${s}" th:text="${s}">
+						</option>
+					</select>
+				</div>
+
+				<div class="card-footer">
+					<button type="submit" class="btn btn-primary">
+						<i class="fas fa-save mr-1"></i>
+						Actualizar
+					</button>
+					<a th:href="@{/consultations}" class="btn btn-secondary ml-2">
+						<i class="fas fa-times mr-1"></i>
+						Cancelar
+					</a>
+				</div>
+			</form>
+
+		</div>
+	</div>
+</th:block>
+
+</html>

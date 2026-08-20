@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Dashboard',
+          pageTitle='Dashboard',
+          activeMenu='dashboard',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+
+    <!-- Saudação -->
+    <div class="callout callout-info mb-4">
+        <h5>
+            <i class="fas fa-user mr-2"></i>
+            Bem-vindo,
+            <span th:text="${patientName}"></span>!
+        </h5>
+        <p class="mb-0">
+            Aqui está o resumo da sua saúde.
+        </p>
+    </div>
+
+    <!-- Cards -->
+    <div class="row">
+        <div class="col-lg-4 col-6">
+            <div class="small-box bg-gradient-info">
+                <div class="inner">
+                    <h3 th:text="${myConsultations}">0</h3>
+                    <p>Total Consultas</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <a th:href="@{/patients/consultations}"
+                   class="small-box-footer">
+                    Ver todas
+                    <i class="fas fa-arrow-circle-right ml-1"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 col-6">
+            <div class="small-box bg-gradient-warning">
+                <div class="inner">
+                    <h3 th:text="${myConsultationsAgendadas}">0</h3>
+                    <p>Consultas Agendadas</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-calendar-day"></i>
+                </div>
+                <a th:href="@{/patients/consultations}"
+                   class="small-box-footer">
+                    Ver todas
+                    <i class="fas fa-arrow-circle-right ml-1"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 col-6">
+            <div class="small-box bg-gradient-success">
+                <div class="inner">
+                    <h3 th:text="${myExams}">0</h3>
+                    <p>Exames Realizados</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-flask"></i>
+                </div>
+                <a th:href="@{/patients/history}"
+                   class="small-box-footer">
+                    Ver histórico
+                    <i class="fas fa-arrow-circle-right ml-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acesso rápido -->
+    <div class="card">
+        <div class="card-header border-0">
+            <h3 class="card-title">
+                <i class="fas fa-bolt mr-2 text-warning"></i>
+                O que pretende fazer?
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <a th:href="@{/available-slots}"
+                       class="btn btn-outline-primary btn-block py-4">
+                        <i class="fas fa-calendar-plus fa-2x mb-2 d-block"></i>
+                        <strong>Marcar Consulta</strong>
+                        <small class="d-block text-muted mt-1"
+                               th:text="${availableSlots} + ' horários disponíveis'">
+                        </small>
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <a th:href="@{/patients/consultations}"
+                       class="btn btn-outline-info btn-block py-4">
+                        <i class="fas fa-calendar-check fa-2x mb-2 d-block"></i>
+                        <strong>Minhas Consultas</strong>
+                        <small class="d-block text-muted mt-1">
+                            Ver e gerir consultas
+                        </small>
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <a th:href="@{/patients/history}"
+                       class="btn btn-outline-success btn-block py-4">
+                        <i class="fas fa-history fa-2x mb-2 d-block"></i>
+                        <strong>Histórico Clínico</strong>
+                        <small class="d-block text-muted mt-1">
+                            Ver exames e atendimentos
+                        </small>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+</html>

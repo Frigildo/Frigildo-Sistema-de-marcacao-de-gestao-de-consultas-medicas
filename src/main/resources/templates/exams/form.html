@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Exame',
+          pageTitle=${examId != null} ? 'Editar Exame' : 'Novo Exame',
+          activeMenu='exams',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-flask mr-2"></i>
+                <span th:text="${examId != null} ?
+                    'Editar Exame' : 'Novo Exame'">
+                </span>
+            </h3>
+        </div>
+        <div class="card-body">
+
+            <div th:if="${errorMessage}"
+                 class="alert alert-danger alert-dismissible">
+                <button type="button" class="close"
+                        data-dismiss="alert">&times;</button>
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <!-- Info do atendimento se existir -->
+            <div th:if="${attendance != null}"
+                 class="card card-outline card-info mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Atendimento
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="text-muted small">Paciente</label>
+                            <p class="font-weight-bold mb-0"
+                               th:text="${attendance.patientName}">
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small">Médico</label>
+                            <p class="font-weight-bold mb-0"
+                               th:text="${attendance.doctorName}">
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CRIAR -->
+            <form th:if="${examId == null}"
+                  th:action="@{/attendances/{id}/exams/save(id=${attendanceId})}"
+                  th:object="${examDTO}"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                <input type="hidden"
+                       th:field="*{attendanceId}">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-flask mr-1 text-warning"></i>
+                                Tipo de Exame
+                                <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-control"
+                                    th:field="*{type}"
+                                    required>
+                                <option value="">
+                                    Seleccione o tipo
+                                </option>
+                                <option th:each="t : ${examTypes}"
+                                        th:value="${t}"
+                                        th:text="${t}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-calendar mr-1"></i>
+                                Data
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="date"
+                                   class="form-control"
+                                   th:field="*{date}"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-file-alt mr-1"></i>
+                        Resultado
+                        <small class="text-muted">
+                            (pode ser preenchido depois)
+                        </small>
+                    </label>
+                    <textarea class="form-control"
+                              th:field="*{result}"
+                              rows="4"
+                              placeholder="Descreva o resultado do exame">
+                    </textarea>
+                </div>
+
+                <!-- Upload -->
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-paperclip mr-1"></i>
+                        Anexar Ficheiro
+                        <small class="text-muted">
+                            (PDF, JPG, PNG)
+                        </small>
+                    </label>
+                    <div class="custom-file">
+                        <input type="file"
+                               class="custom-file-input"
+                               id="fileInput"
+                               name="file"
+                               accept=".pdf,.jpg,.jpeg,.png">
+                        <label class="custom-file-label"
+                               for="fileInput">
+                            Escolher ficheiro...
+                        </label>
+                    </div>
+                    <small class="text-muted mt-1 d-block">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Formatos aceites: PDF, JPG, PNG
+                    </small>
+                </div>
+
+                <div class="card-footer px-0">
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="fas fa-save mr-1"></i>
+                        Guardar Exame
+                    </button>
+                    <a th:if="${attendanceId != null}"
+                       th:href="@{/attendances/{id}/edit(id=${attendanceId})}"
+                       class="btn btn-secondary ml-2">
+                        <i class="fas fa-times mr-1"></i>
+                        Cancelar
+                    </a>
+                    <a th:unless="${attendanceId != null}"
+                       th:href="@{/exams}"
+                       class="btn btn-secondary ml-2">
+                        <i class="fas fa-times mr-1"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+
+            <!-- EDITAR -->
+            <form th:if="${examId != null}"
+                  th:action="@{/exams/{id}/update(id=${examId})}"
+                  th:object="${examDTO}"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Tipo de Exame
+                                <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-control"
+                                    th:field="*{type}"
+                                    required>
+                                <option value="">
+                                    Seleccione o tipo
+                                </option>
+                                <option th:each="t : ${examTypes}"
+                                        th:value="${t}"
+                                        th:text="${t}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Data
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="date"
+                                   class="form-control"
+                                   th:field="*{date}"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Resultado</label>
+                    <textarea class="form-control"
+                              th:field="*{result}"
+                              rows="4"
+                              placeholder="Resultado do exame">
+                    </textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-paperclip mr-1"></i>
+                        Anexar Ficheiro
+                        <small class="text-muted">
+                            (PDF, JPG, PNG)
+                        </small>
+                    </label>
+                    <div class="custom-file">
+                        <input type="file"
+                               class="custom-file-input"
+                               id="fileInput"
+                               name="file"
+                               accept=".pdf,.jpg,.jpeg,.png">
+                        <label class="custom-file-label"
+                               for="fileInput">
+                            Escolher ficheiro...
+                        </label>
+                    </div>
+                </div>
+
+                <div class="card-footer px-0">
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="fas fa-save mr-1"></i>
+                        Actualizar
+                    </button>
+                    <a th:href="@{/exams}"
+                       class="btn btn-secondary ml-2">
+                        <i class="fas fa-times mr-1"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+    document.getElementById('fileInput')
+        .addEventListener('change', function(e) {
+            var fileName = e.target.files[0]
+                ? e.target.files[0].name
+                : 'Escolher ficheiro...';
+            document.querySelector(
+                '.custom-file-label')
+                .textContent = fileName;
+        });
+    /*]]>*/
+    </script>
+
+</th:block>
+</html>

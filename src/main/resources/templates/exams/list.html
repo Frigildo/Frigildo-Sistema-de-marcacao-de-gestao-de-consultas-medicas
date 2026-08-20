@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Exames',
+          pageTitle='Lista de Exames',
+          activeMenu='exams',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+
+    <div th:if="${success}"
+         class="alert alert-success alert-dismissible fade show">
+        <button type="button" class="close"
+                data-dismiss="alert">&times;</button>
+        <i class="fas fa-check-circle mr-2"></i>
+        <span th:text="${success}"></span>
+    </div>
+    <div th:if="${error}"
+         class="alert alert-danger alert-dismissible fade show">
+        <button type="button" class="close"
+                data-dismiss="alert">&times;</button>
+        <i class="fas fa-exclamation-circle mr-2"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-flask mr-2"></i>
+                Exames
+            </h3>
+            <div class="card-tools d-flex">
+                <form th:action="@{/exams}"
+                      method="get" class="mr-2">
+                    <div class="input-group input-group-sm">
+                        <input type="text"
+                               name="search"
+                               class="form-control"
+                               th:value="${search}"
+                               placeholder="Pesquisar por tipo...">
+                        <div class="input-group-append">
+                            <button type="submit"
+                                    class="btn btn-default">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <a th:if="${search != null}"
+                               th:href="@{/exams}"
+                               class="btn btn-default">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+                <a th:href="@{/exams/new}"
+                   class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus mr-1"></i>Novo
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+
+            <div th:if="${search != null}"
+                 class="alert alert-info mb-3">
+                <i class="fas fa-search mr-2"></i>
+                Resultados para:
+                <strong th:text="${search}"></strong>
+                <a th:href="@{/exams}"
+                   class="float-right">Limpar</a>
+            </div>
+
+            <table class="table table-bordered
+                          table-striped table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Tipo</th>
+                        <th>Data</th>
+                        <th>Paciente</th>
+                        <th>Médico</th>
+                        <th>Resultado</th>
+                        <th>Acções</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="e : ${exams}">
+                        <td th:text="${e.id}"></td>
+                        <td th:text="${e.type}"></td>
+                        <td th:text="${#temporals.format(
+                            e.date, 'dd/MM/yyyy')}">
+                        </td>
+                        <td th:text="${e.patientName}">
+                        </td>
+                        <td th:text="${e.doctorName}"></td>
+                        <td th:text="${e.result}"></td>
+                        <td>
+                            <a th:href="@{/exams/{id}/edit(id=${e.id})}"
+                               class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a th:href="@{/exams/{id}/delete(id=${e.id})}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Tem a certeza?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(exams)}">
+                        <td colspan="7"
+                            class="text-center text-muted">
+                            Nenhum exame encontrado
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <small class="text-muted">
+                Total:
+                <strong th:text="${#lists.size(exams)}">
+                </strong>
+                exames
+            </small>
+        </div>
+    </div>
+
+</th:block>
+</html>

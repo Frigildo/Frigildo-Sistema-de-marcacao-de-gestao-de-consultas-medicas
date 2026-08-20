@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Seleccionar Utilizador',
+          pageTitle='Seleccionar Utilizador',
+          activeMenu='patients',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-users mr-2"></i>
+                Seleccionar Utilizador
+            </h3>
+            <div class="card-tools">
+                <form th:action="@{/patients/select-user}"
+                      method="get">
+                    <div class="input-group input-group-sm">
+                        <input type="text"
+                               name="search"
+                               class="form-control"
+                               th:value="${search}"
+                               placeholder="Pesquisar por email...">
+                        <div class="input-group-append">
+                            <button type="submit"
+                                    class="btn btn-default">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <a th:if="${search != null}"
+                               th:href="@{/patients/select-user}"
+                               class="btn btn-default">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Email</th>
+                        <th>Perfil</th>
+                        <th>Acção</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.email}"></td>
+                        <td>
+                            <span th:if="${user.profile.name() == 'ADMINISTRADOR'}"
+                                  class="badge badge-danger"
+                                  th:text="${user.profile}">
+                            </span>
+                            <span th:if="${user.profile.name() == 'MEDICO'}"
+                                  class="badge badge-success"
+                                  th:text="${user.profile}">
+                            </span>
+                            <span th:if="${user.profile.name() == 'PACIENTE'}"
+                                  class="badge badge-info"
+                                  th:text="${user.profile}">
+                            </span>
+                        </td>
+                        <td>
+                            <a th:if="${user.profile.name() == 'PACIENTE'}"
+                               th:href="@{/patients/new(userId=${user.id})}"
+                               class="btn btn-primary btn-sm">
+                                <i class="fas fa-check mr-1"></i>
+                                Seleccionar
+                            </a>
+                            <span th:unless="${user.profile.name() == 'PACIENTE'}"
+                                  class="text-muted small">
+                                <i class="fas fa-ban mr-1"></i>
+                                Perfil incorrecto
+                            </span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(users)}">
+                        <td colspan="3"
+                            class="text-center text-muted py-3">
+                            Nenhum utilizador encontrado
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <small class="text-muted">
+                <i class="fas fa-info-circle mr-1"></i>
+                Só utilizadores com perfil
+                <strong>PACIENTE</strong>
+                podem ser seleccionados
+            </small>
+        </div>
+    </div>
+
+    <a th:href="@{/patients/new}"
+       class="btn btn-secondary mt-2">
+        <i class="fas fa-arrow-left mr-1"></i>
+        Cancelar
+    </a>
+
+</th:block>
+</html>

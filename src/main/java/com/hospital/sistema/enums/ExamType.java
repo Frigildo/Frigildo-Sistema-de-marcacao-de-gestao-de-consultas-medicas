@@ -1,0 +1,6 @@
+package com.hospital.sistema.enums;
+
+public enum ExamType {
+
+	HEMOGRAMA, GLICEMIA, ANALISE_URINA, ANALISE_FEZES, RAIO_X, ECOGRAFIA, HIV, MALARIA, BACILOSCOPIA, PAPANICOLAU
+}

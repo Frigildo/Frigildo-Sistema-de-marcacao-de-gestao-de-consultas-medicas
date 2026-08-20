@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Atendimentos',
+          pageTitle='Lista de Atendimentos',
+          activeMenu='attendances',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+
+    <div th:if="${success}"
+         class="alert alert-success alert-dismissible fade show">
+        <button type="button" class="close"
+                data-dismiss="alert">&times;</button>
+        <i class="fas fa-check-circle mr-2"></i>
+        <span th:text="${success}"></span>
+    </div>
+    <div th:if="${error}"
+         class="alert alert-danger alert-dismissible fade show">
+        <button type="button" class="close"
+                data-dismiss="alert">&times;</button>
+        <i class="fas fa-exclamation-circle mr-2"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-stethoscope mr-2"></i>
+                Atendimentos
+            </h3>
+            <div class="card-tools d-flex">
+                <form th:action="@{/attendances}"
+                      method="get" class="mr-2">
+                    <div class="input-group input-group-sm">
+                        <input type="text"
+                               name="search"
+                               class="form-control"
+                               th:value="${search}"
+                               placeholder="Pesquisar por paciente...">
+                        <div class="input-group-append">
+                            <button type="submit"
+                                    class="btn btn-default">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <a th:if="${search != null}"
+                               th:href="@{/attendances}"
+                               class="btn btn-default">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+                <a th:href="@{/attendances/new}"
+                   class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus mr-1"></i>Novo
+                </a>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-bordered
+                          table-striped table-hover mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Paciente</th>
+                        <th>Médico</th>
+                        <th>Data</th>
+                        <th>Estado</th>
+                        <th>Acções</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="a : ${attendances}">
+                        <td th:text="${a.patientName}"></td>
+                        <td th:text="${a.doctorName}"></td>
+                        <td th:text="${#temporals.format(a.attendanceDate, 'dd/MM/yyyy')}"></td>
+                        <td>
+                            <span th:if="${a.status.name() == 'PENDENTE'}"
+                                  class="badge badge-warning">
+                                <i class="fas fa-clock mr-1"></i>
+                                Pendente
+                            </span>
+                            <span th:if="${a.status.name() == 'AGUARDA_EXAMES'}"
+                                  class="badge badge-info">
+                                <i class="fas fa-hourglass-half mr-1"></i>
+                                Aguarda Exames
+                            </span>
+                            <span th:if="${a.status.name() == 'CONCLUIDO'}"
+                                  class="badge badge-success">
+                                <i class="fas fa-check mr-1"></i>
+                                Concluído
+                            </span>
+                        </td>
+                        <td>
+                            <!-- Editar e Exame
+                                 só se não Concluído -->
+                            <th:block th:if="${a.status.name() != 'CONCLUIDO'}">
+                                <a th:href="@{/attendances/{id}/edit(id=${a.id})}"
+                                   class="btn btn-warning btn-sm"
+                                   title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a th:href="@{/attendances/{id}/exams/new(id=${a.id})}"
+                                   class="btn btn-info btn-sm"
+                                   title="Adicionar Exame">
+                                    <i class="fas fa-flask mr-1"></i>
+                                    Exame
+                                </a>
+                            </th:block>
+
+                            <!-- Concluído — só Admin apaga -->
+                            <th:block th:if="${a.status.name() == 'CONCLUIDO'}">
+                                <span class="text-muted small mr-2">
+                                    <i class="fas fa-lock mr-1"></i>
+                                    Concluído
+                                </span>
+                            </th:block>
+
+                            <!-- Apagar — só Admin -->
+                            <a th:if="${userRole == 'ADMINISTRADOR'}"
+                               th:href="@{/attendances/{id}/delete(id=${a.id})}"
+                               class="btn btn-danger btn-sm"
+                               title="Apagar"
+                               onclick="return confirm('Tem a certeza?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(attendances)}">
+                        <td colspan="5"
+                            class="text-center text-muted py-3">
+                            <i class="fas fa-search mr-2"></i>
+                            Nenhum atendimento encontrado
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <small class="text-muted">
+                Total:
+                <strong th:text="${#lists.size(attendances)}">
+                </strong>
+                atendimentos
+            </small>
+        </div>
+    </div>
+
+</th:block>
+</html>

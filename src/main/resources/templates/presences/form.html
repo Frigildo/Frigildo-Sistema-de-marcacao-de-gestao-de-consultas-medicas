@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Presença',
+          pageTitle=${presenceId != null} ? 'Editar Presença' : 'Nova Presença',
+          activeMenu='presences',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+
+    <div th:if="${errorMessage}"
+         class="alert alert-danger alert-dismissible">
+        <button type="button" class="close"
+                data-dismiss="alert">&times;</button>
+        <i class="fas fa-exclamation-circle mr-2"></i>
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <!-- ===== CRIAR ===== -->
+    <th:block th:if="${presenceId == null}">
+
+        <!-- Passo 1: seleccionar consulta -->
+        <div class="card card-outline card-info mb-3">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-calendar-check mr-2"></i>
+                    Seleccionar Consulta
+                </h3>
+                <div class="card-tools">
+                    <form th:action="@{/presences/new}" method="get">
+                        <div class="input-group input-group-sm">
+                            <input type="text"
+                                   name="search"
+                                   class="form-control"
+                                   th:value="${search}"
+                                   placeholder="Pesquisar por nome do paciente...">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                <a th:if="${search != null}"
+                                   th:href="@{/presences/new}"
+                                   class="btn btn-default">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Paciente</th>
+                            <th>Médico</th>
+                            <th>Data</th>
+                            <th>Hora</th>
+                            <th>Estado</th>
+                            <th>Acção</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${consultations}">
+                            <td th:text="${c.patientName}"></td>
+                            <td th:text="${c.doctorName}"></td>
+                            <td th:text="${#temporals.format(c.date, 'dd/MM/yyyy')}"></td>
+                            <td th:text="${#temporals.format(c.time, 'HH:mm')}"></td>
+                            <td>
+                                <span th:text="${c.status}"
+                                      th:class="${c.status.name() == 'AGENDADA'} ? 'badge badge-info' : (${c.status.name() == 'CONCLUIDA'} ? 'badge badge-success' : 'badge badge-danger')">
+                                </span>
+                            </td>
+                            <td>
+                                <a th:href="@{/presences/new-for(consultationId=${c.id})}"
+                                   class="btn btn-success btn-sm">
+                                    <i class="fas fa-check mr-1"></i>
+                                    Seleccionar
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(consultations)}">
+                            <td colspan="6"
+                                class="text-center text-muted py-4">
+                                <i class="fas fa-calendar-times fa-2x mb-2 d-block"></i>
+                                Nenhuma consulta encontrada
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <small class="text-muted">
+                    Total:
+                    <strong th:text="${#lists.size(consultations)}"></strong>
+                    consultas agendadas
+                </small>
+            </div>
+        </div>
+
+        <!-- Passo 2: formulário de registo -->
+        <div th:if="${selectedConsultation != null}"
+             class="card card-outline card-primary">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-clipboard-check mr-2"></i>
+                    Registar Presença
+                </h3>
+            </div>
+            <div class="card-body">
+
+                <div class="card card-outline card-info mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="text-muted small">Paciente</label>
+                                <p class="font-weight-bold mb-0"
+                                   th:text="${selectedConsultation.patientName}"></p>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="text-muted small">Médico</label>
+                                <p class="font-weight-bold mb-0"
+                                   th:text="${selectedConsultation.doctorName}"></p>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="text-muted small">Data</label>
+                                <p class="font-weight-bold mb-0"
+                                   th:text="${#temporals.format(selectedConsultation.date, 'dd/MM/yyyy')}"></p>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="text-muted small">Hora</label>
+                                <p class="font-weight-bold mb-0"
+                                   th:text="${#temporals.format(selectedConsultation.time, 'HH:mm')}"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form th:action="@{/presences/save}"
+                      th:object="${presenceDTO}"
+                      method="post">
+
+                    <input type="hidden"
+                           name="consultationId"
+                           th:value="${selectedConsultation.id}"/>
+
+                    <div class="card card-outline card-secondary mb-3">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-clipboard-check mr-2"></i>
+                                Estado de Presença
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label>Estado
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select class="form-control"
+                                        th:field="*{status}"
+                                        id="statusSelect"
+                                        required>
+                                    <option value="">
+                                        Seleccione o estado
+                                    </option>
+                                    <option th:each="s : ${statuses}"
+                                            th:value="${s}"
+                                            th:text="${s}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="form-group mb-0"
+                                 id="justificationGroup"
+                                 style="display:none;">
+                                <label>Justificação
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <textarea class="form-control"
+                                          th:field="*{justification}"
+                                          rows="3"
+                                          placeholder="Justificação da ausência">
+                                </textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex mt-2">
+                        <button type="submit" class="btn btn-primary mr-2">
+                            <i class="fas fa-save mr-1"></i>
+                            Guardar
+                        </button>
+                        <a th:href="@{/presences}" class="btn btn-secondary">
+                            <i class="fas fa-times mr-1"></i>
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </th:block>
+
+    <!-- ===== EDITAR ===== -->
+    <th:block th:if="${presenceId != null}">
+        <form th:action="@{/presences/{id}/update(id=${presenceId})}"
+              th:object="${presenceDTO}"
+              method="post">
+
+            <div class="card card-outline card-info mb-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="text-muted small">Paciente</label>
+                            <p class="font-weight-bold mb-0"
+                               th:text="${presence.patientName}"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small">Médico</label>
+                            <p class="font-weight-bold mb-0"
+                               th:text="${presence.doctorName}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-outline card-secondary mb-3">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-clipboard-check mr-2"></i>
+                        Estado de Presença
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Estado
+                            <span class="text-danger">*</span>
+                        </label>
+                        <select class="form-control"
+                                th:field="*{status}"
+                                id="editStatusSelect"
+                                required>
+                            <option th:each="s : ${statuses}"
+                                    th:value="${s}"
+                                    th:text="${s}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-0"
+                         id="editJustificationGroup"
+                         style="display:none;">
+                        <label>Justificação</label>
+                        <textarea class="form-control"
+                                  th:field="*{justification}"
+                                  rows="3"
+                                  placeholder="Justificação da ausência">
+                        </textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex mt-2">
+                <button type="submit" class="btn btn-primary mr-2">
+                    <i class="fas fa-save mr-1"></i>
+                    Actualizar
+                </button>
+                <a th:href="@{/presences}" class="btn btn-secondary">
+                    <i class="fas fa-times mr-1"></i>
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </th:block>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // CRIAR
+            const statusSelect = document.getElementById('statusSelect');
+            const justGroup = document.getElementById('justificationGroup');
+            if (statusSelect && justGroup) {
+                justGroup.style.display = statusSelect.value === 'AUSENTE' ? 'block' : 'none';
+                statusSelect.addEventListener('change', function () {
+                    justGroup.style.display = this.value === 'AUSENTE' ? 'block' : 'none';
+                });
+            }
+
+            // EDITAR
+            const editStatus = document.getElementById('editStatusSelect');
+            const editJustGroup = document.getElementById('editJustificationGroup');
+            if (editStatus && editJustGroup) {
+                editJustGroup.style.display = editStatus.value === 'AUSENTE' ? 'block' : 'none';
+                editStatus.addEventListener('change', function () {
+                    editJustGroup.style.display = this.value === 'AUSENTE' ? 'block' : 'none';
+                });
+            }
+
+        });
+    </script>
+
+</th:block>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Histórico Clínico',
+          pageTitle='Meu Histórico Clínico',
+          activeMenu='history',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+
+    <!-- Consultas -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-calendar-check mr-2"></i>
+                Consultas
+            </h3>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Médico</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${consultations}">
+                        <td th:text="${#temporals.format(c.date, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${#temporals.format(c.time, 'HH:mm')}"></td>
+                        <td th:text="${c.doctorName}"></td>
+                        <td>
+                            <span th:if="${c.status.name() == 'AGENDADA'}"
+                                  class="badge badge-warning">
+                                Agendada
+                            </span>
+                            <span th:if="${c.status.name() == 'CONCLUIDA'}"
+                                  class="badge badge-success">
+                                Concluída
+                            </span>
+                            <span th:if="${c.status.name() == 'CANCELADA'}"
+                                  class="badge badge-danger">
+                                Cancelada
+                            </span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(consultations)}">
+                        <td colspan="4"
+                            class="text-center text-muted py-3">
+                            Sem consultas registadas
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Atendimentos -->
+    <div class="card mt-3">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-stethoscope mr-2"></i>
+                Atendimentos
+            </h3>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Data</th>
+                        <th>Médico</th>
+                        <th>Diagnóstico</th>
+                        <th>Medicação</th>
+                        <th>Observações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="a : ${attendances}">
+                        <td th:text="${#temporals.format(a.attendanceDate, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${a.doctorName}"></td>
+                        <td th:text="${a.diagnosis != null and !a.diagnosis.isEmpty()} ? ${a.diagnosis} : '—'"></td>
+                        <td th:text="${a.medication != null and !a.medication.isEmpty()} ? ${a.medication} : '—'"></td>
+                        <td th:text="${a.observations != null and !a.observations.isEmpty()} ? ${a.observations} : '—'"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(attendances)}">
+                        <td colspan="5"
+                            class="text-center text-muted py-3">
+                            Sem atendimentos registados
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Exames -->
+    <div class="card mt-3">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-flask mr-2"></i>
+                Exames
+            </h3>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Data</th>
+                        <th>Resultado</th>
+                        <th>Ficheiro</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="e : ${exams}">
+                        <td th:text="${e.type}"></td>
+                        <td th:text="${#temporals.format(e.date, 'dd/MM/yyyy')}"></td>
+                        <td>
+                            <span th:if="${e.result != null and !e.result.isEmpty()}"
+                                  th:text="${e.result}"
+                                  class="text-success">
+                            </span>
+                            <span th:unless="${e.result != null and !e.result.isEmpty()}"
+                                  class="badge badge-warning">
+                                Pendente
+                            </span>
+                        </td>
+                        <td>
+                            <th:block th:if="${e.fileName != null}">
+                                <!-- PDF -->
+                                <a th:if="${e.fileType != null and e.fileType.contains('pdf')}"
+                                   th:href="@{'/files/exams/' + ${e.filePath.substring(e.filePath.lastIndexOf('/') + 1)}}"
+                                   target="_blank"
+                                   class="btn btn-danger btn-xs"
+                                   title="Ver PDF">
+                                    <i class="fas fa-file-pdf mr-1"></i>
+                                    Ver PDF
+                                </a>
+                                <!-- Imagem -->
+                                <a th:if="${e.fileType != null and e.fileType.contains('image')}"
+                                   th:href="@{'/files/exams/' + ${e.filePath.substring(e.filePath.lastIndexOf('/') + 1)}}"
+                                   target="_blank"
+                                   class="btn btn-info btn-xs"
+                                   title="Ver Imagem">
+                                    <i class="fas fa-image mr-1"></i>
+                                    Ver Imagem
+                                </a>
+                            </th:block>
+
+                            <!-- Sem ficheiro -->
+                            <span th:unless="${e.fileName != null}"
+                                  class="text-muted small">
+                                <i class="fas fa-clock mr-1"></i>
+                                Pendente
+                            </span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(exams)}">
+                        <td colspan="4"
+                            class="text-center text-muted py-3">
+                            Sem exames registados
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Aconselhamentos -->
+    <div class="card mt-3">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-comments mr-2"></i>
+                Aconselhamentos
+            </h3>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Data</th>
+                        <th>Descrição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${counselings}">
+                        <td th:text="${#temporals.format(c.date, 'dd/MM/yyyy')}"></td>
+                        <td th:text="${c.description}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(counselings)}">
+                        <td colspan="2"
+                            class="text-center text-muted py-3">
+                            Sem aconselhamentos registados
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</th:block>
+</html>

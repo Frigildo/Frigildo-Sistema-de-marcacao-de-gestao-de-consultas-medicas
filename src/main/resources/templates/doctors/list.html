@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Médicos',
+          pageTitle='Lista de Médicos',
+          activeMenu='doctors',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+
+    <div th:if="${success}"
+         class="alert alert-success alert-dismissible fade show">
+        <button type="button" class="close"
+                data-dismiss="alert">&times;</button>
+        <i class="fas fa-check-circle mr-2"></i>
+        <span th:text="${success}"></span>
+    </div>
+    <div th:if="${error}"
+         class="alert alert-danger alert-dismissible fade show">
+        <button type="button" class="close"
+                data-dismiss="alert">&times;</button>
+        <i class="fas fa-exclamation-circle mr-2"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-user-md mr-2"></i>
+                Médicos
+            </h3>
+            <div class="card-tools d-flex">
+                <form th:action="@{/doctors}"
+                      method="get" class="mr-2">
+                    <div class="input-group input-group-sm">
+                        <input type="text"
+                               name="search"
+                               class="form-control"
+                               th:value="${search}"
+                               placeholder="Pesquisar por nome...">
+                        <div class="input-group-append">
+                            <button type="submit"
+                                    class="btn btn-default">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <a th:if="${search != null}"
+                               th:href="@{/doctors}"
+                               class="btn btn-default">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+                <a th:href="@{/doctors/new}"
+                   class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus mr-1"></i>Novo
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+
+            <div th:if="${search != null}"
+                 class="alert alert-info mb-3">
+                <i class="fas fa-search mr-2"></i>
+                Resultados para:
+                <strong th:text="${search}"></strong>
+                <a th:href="@{/doctors}"
+                   class="float-right">Limpar</a>
+            </div>
+
+            <table class="table table-bordered
+                          table-striped table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Nome</th>
+                        <th>Nº Funcionário</th>
+                        <th>Telefone</th>
+                        <th>Email Login</th>
+                        <th>Acções</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="doctor : ${doctors}">
+                        <td th:text="${doctor.id}"></td>
+                        <td th:text="${doctor.name}"></td>
+                        <td th:text="${doctor.employeeNumber}">
+                        </td>
+                        <td th:text="${doctor.cellPhone}"></td>
+                        <td th:text="${doctor.userEmail}"></td>
+                        <td>
+                            <a th:href="@{/doctors/{id}/edit(id=${doctor.id})}"
+                               class="btn btn-warning btn-sm"
+                               title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a th:href="@{/doctors/{id}/delete(id=${doctor.id})}"
+                               class="btn btn-danger btn-sm"
+                               title="Apagar"
+                               onclick="return confirm('Tem a certeza?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(doctors)}">
+                        <td colspan="6"
+                            class="text-center text-muted">
+                            <i class="fas fa-search mr-2"></i>
+                            Nenhum médico encontrado
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <small class="text-muted">
+                Total:
+                <strong th:text="${#lists.size(doctors)}">
+                </strong>
+                médicos
+            </small>
+        </div>
+    </div>
+
+</th:block>
+</html>

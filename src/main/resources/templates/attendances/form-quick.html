@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Iniciar Atendimento',
+          pageTitle='Iniciar Atendimento',
+          activeMenu='attendances',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+
+    <div th:if="${success}"
+         class="alert alert-success alert-dismissible fade show">
+        <button type="button" class="close"
+                data-dismiss="alert">&times;</button>
+        <i class="fas fa-check-circle mr-2"></i>
+        <span th:text="${success}"></span>
+    </div>
+    <div th:if="${error}"
+         class="alert alert-danger alert-dismissible fade show">
+        <button type="button" class="close"
+                data-dismiss="alert">&times;</button>
+        <i class="fas fa-exclamation-circle mr-2"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <form id="attendanceForm"
+          th:action="@{/attendances/new/from-consultation/{id}(id=${selectedConsultation.id})}"
+          th:object="${attendanceDTO}"
+          method="post">
+
+        <input type="hidden"
+               name="needsExam"
+               id="needsExamInput"
+               value="false">
+
+        <!-- ─────────────────────────────── -->
+        <!-- Info da consulta               -->
+        <!-- ─────────────────────────────── -->
+        <div class="card card-outline card-info mb-3">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-calendar-check mr-2"></i>
+                    Informação da Consulta
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group mb-0">
+                            <label class="text-muted small">Paciente</label>
+                            <p class="font-weight-bold mb-0"
+                               th:text="${selectedConsultation.patientName}">
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-0">
+                            <label class="text-muted small">Médico</label>
+                            <p class="font-weight-bold mb-0"
+                               th:text="${selectedConsultation.doctorName}">
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-0">
+                            <label class="text-muted small">Data</label>
+                            <p class="font-weight-bold mb-0"
+                               th:text="${#temporals.format(selectedConsultation.date, 'dd/MM/yyyy')}">
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-0">
+                            <label class="text-muted small">Hora</label>
+                            <p class="font-weight-bold mb-0"
+                               th:text="${#temporals.format(selectedConsultation.time, 'HH:mm')}">
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─────────────────────────────── -->
+        <!-- Data do Atendimento            -->
+        <!-- ─────────────────────────────── -->
+        <div class="card card-outline card-secondary mb-3">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-calendar-alt mr-2"></i>
+                    Data do Atendimento
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="date"
+                               class="form-control"
+                               th:field="*{attendanceDate}"
+                               required>
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Pré-preenchida com a data da consulta
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <!-- Coluna esquerda -->
+            <div class="col-md-7">
+
+                <!-- PASSO 1 — Observações -->
+                <div class="card card-primary card-outline mb-3">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <span class="badge badge-primary mr-2">1</span>
+                            Observações
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <textarea class="form-control"
+                                  th:field="*{observations}"
+                                  rows="4"
+                                  placeholder="Registe as observações do atendimento">
+                        </textarea>
+                    </div>
+                </div>
+
+                <!-- PASSO 3 — Diagnóstico e Medicação -->
+                <div class="card card-success card-outline mb-3">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <span class="badge badge-success mr-2">3</span>
+                            Diagnóstico e Medicação
+                        </h3>
+                        <div class="card-tools">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Pode preencher após os resultados dos exames
+                            </small>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-diagnoses mr-1 text-success"></i>
+                                Diagnóstico
+                            </label>
+                            <textarea class="form-control"
+                                      th:field="*{diagnosis}"
+                                      rows="3"
+                                      placeholder="Registe o diagnóstico clínico do paciente">
+                            </textarea>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label>
+                                <i class="fas fa-pills mr-1 text-success"></i>
+                                Medicação Prescrita
+                            </label>
+                            <textarea class="form-control"
+                                      th:field="*{medication}"
+                                      rows="3"
+                                      placeholder="Registe a medicação prescrita ao paciente">
+                            </textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Coluna direita — PASSO 2 -->
+            <div class="col-md-5">
+                <div class="card card-warning card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <span class="badge badge-warning mr-2">2</span>
+                            Pedido de Exame
+                        </h3>
+                        <div class="card-tools">
+                            <button type="button"
+                                    class="btn btn-tool"
+                                    id="examToggleBtn"
+                                    data-card-widget="collapse">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body"
+                         style="display: none;">
+
+                        <div class="callout callout-warning mb-3">
+                            <small>
+                                <i class="fas fa-info-circle mr-1"></i>
+                                O resultado do exame pode ser
+                                anexado posteriormente
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-flask mr-1 text-warning"></i>
+                                Tipo de Exame
+                            </label>
+                            <select class="form-control"
+                                    th:field="*{examType}">
+                                <option value="">
+                                    Seleccione o tipo
+                                </option>
+                                <option th:each="t : ${examTypes}"
+                                        th:value="${t}"
+                                        th:text="${t}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label>
+                                <i class="fas fa-calendar mr-1 text-warning"></i>
+                                Data do Exame
+                            </label>
+                            <input type="date"
+                                   class="form-control"
+                                   th:field="*{examDate}">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </form>
+
+    <!-- Botões -->
+    <div class="d-flex flex-wrap mt-2">
+        <button form="attendanceForm"
+                type="submit"
+                class="btn btn-primary mr-2 mb-2">
+            <i class="fas fa-save mr-1"></i>
+            Salvar Atendimento
+        </button>
+        <a th:href="@{/consultations}"
+           class="btn btn-secondary mb-2">
+            <i class="fas fa-times mr-1"></i>
+            Cancelar
+        </a>
+    </div>
+
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded',
+        function() {
+            var btn = document
+                .getElementById('examToggleBtn');
+            var input = document
+                .getElementById('needsExamInput');
+            if (btn && input) {
+                btn.addEventListener('click',
+                    function() {
+                        if (input.value === 'false') {
+                            input.value = 'true';
+                        } else {
+                            input.value = 'false';
+                        }
+                    });
+            }
+        });
+    /*]]>*/
+    </script>
+
+</th:block>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="base(title, pageTitle, activeMenu, content)">
+
+<head th:replace="~{fragments/head :: head(${title})}"></head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+    <!-- Navbar -->
+    <th:block th:replace="~{fragments/navbar :: navbar}">
+    </th:block>
+
+    <!-- Sidebar -->
+    <th:block th:replace="~{fragments/sidebar :: sidebar}">
+    </th:block>
+
+    <!-- Conteúdo -->
+    <div class="content-wrapper">
+
+        <!-- Cabeçalho -->
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0"
+                            th:text="${pageTitle}">
+                            Página
+                        </h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item">
+                                <a th:href="@{/dashboard}">
+                                    <i class="fas fa-home"></i>
+                                    Início
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active"
+                                th:text="${pageTitle}">
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteúdo dinâmico -->
+        <div class="content">
+            <div class="container-fluid">
+                <th:block th:replace="${content}"></th:block>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <th:block th:replace="~{fragments/footer :: footer}">
+    </th:block>
+
+</div>
+</body>
+</html>

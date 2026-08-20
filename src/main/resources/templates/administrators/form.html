@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Administrador',
+          pageTitle=${administratorId != null} ? 'Editar Administrador' : 'Novo Administrador',
+          activeMenu='administrators',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title"
+                th:text="${administratorId != null} ?
+                    'Editar Administrador' :
+                    'Novo Administrador'">
+            </h3>
+        </div>
+        <div class="card-body">
+
+            <div th:if="${errorMessage}"
+                 class="alert alert-danger alert-dismissible">
+                <button type="button" class="close"
+                        data-dismiss="alert">&times;</button>
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <!-- CRIAR -->
+            <form th:if="${administratorId == null}"
+                  th:action="@{/administrators/save}"
+                  th:object="${administratorDTO}"
+                  method="post">
+
+                <!-- 1º — Selecção utilizador -->
+                <div class="form-group">
+                    <label>Utilizador (Login)
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <!-- Nenhum seleccionado -->
+                    <div th:if="${selectedUser == null}">
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control"
+                                   value="Nenhum utilizador seleccionado"
+                                   readonly>
+                            <div class="input-group-append">
+                                <a th:href="@{/administrators/select-user}"
+                                   class="btn btn-outline-primary">
+                                    <i class="fas fa-search mr-1"></i>
+                                    Escolher
+                                </a>
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            Seleccione um utilizador
+                            com perfil ADMINISTRADOR
+                        </small>
+                    </div>
+
+                    <!-- Seleccionado -->
+                    <div th:if="${selectedUser != null}">
+                        <input type="hidden"
+                               th:field="*{userId}">
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${selectedUser.email}"
+                                   readonly>
+                            <div class="input-group-append">
+                                <a th:href="@{/administrators/select-user}"
+                                   class="btn btn-outline-secondary">
+                                    <i class="fas fa-exchange-alt mr-1"></i>
+                                    Alterar
+                                </a>
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            <i class="fas fa-check-circle text-success mr-1"></i>
+                            Perfil:
+                            <span th:text="${selectedUser.profile}"></span>
+                        </small>
+                    </div>
+                </div>
+
+                <!-- 2º — Nome -->
+                <div class="form-group">
+                    <label>Nome
+                        <span class="text-danger">*</span>
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           th:field="*{name}"
+                           placeholder="Nome completo"
+                           required>
+                </div>
+
+                <div class="card-footer">
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="fas fa-save mr-1"></i>
+                        Salvar
+                    </button>
+                    <a th:href="@{/administrators}"
+                       class="btn btn-secondary ml-2">
+                        <i class="fas fa-times mr-1"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+
+            <!-- EDITAR -->
+            <form th:if="${administratorId != null}"
+                  th:action="@{/administrators/{id}/update(id=${administratorId})}"
+                  th:object="${administratorDTO}"
+                  method="post">
+
+                <!-- 1º — Utilizador só leitura -->
+                <div class="form-group">
+                    <label>Utilizador (Login)</label>
+                    <input type="text"
+                           class="form-control"
+                           th:value="${administrator.userEmail}"
+                           readonly>
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        O utilizador não pode ser alterado
+                    </small>
+                </div>
+
+                <!-- 2º — Nº Funcionário -->
+                <div class="form-group">
+                    <label>Nº Funcionário</label>
+                    <input type="text"
+                           class="form-control"
+                           th:value="${administrator.employeeNumber}"
+                           readonly>
+                </div>
+
+                <!-- 3º — Nome -->
+                <div class="form-group">
+                    <label>Nome
+                        <span class="text-danger">*</span>
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           th:field="*{name}"
+                           placeholder="Nome completo"
+                           required>
+                </div>
+
+                <div class="card-footer">
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="fas fa-save mr-1"></i>
+                        Actualizar
+                    </button>
+                    <a th:href="@{/administrators}"
+                       class="btn btn-secondary ml-2">
+                        <i class="fas fa-times mr-1"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</th:block>
+</html>

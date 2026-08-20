@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Aconselhamento',
+          pageTitle=${counselingId != null} ? 'Editar Aconselhamento' : 'Novo Aconselhamento',
+          activeMenu='counselings',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+
+    <div th:if="${success}"
+         class="alert alert-success alert-dismissible fade show">
+        <button type="button" class="close"
+                data-dismiss="alert">&times;</button>
+        <i class="fas fa-check-circle mr-2"></i>
+        <span th:text="${success}"></span>
+    </div>
+    <div th:if="${error}"
+         class="alert alert-danger alert-dismissible fade show">
+        <button type="button" class="close"
+                data-dismiss="alert">&times;</button>
+        <i class="fas fa-exclamation-circle mr-2"></i>
+        <span th:text="${error}"></span>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-comments mr-2"></i>
+                <span th:text="${counselingId != null} ?
+                    'Editar Aconselhamento' :
+                    'Novo Aconselhamento'">
+                </span>
+            </h3>
+        </div>
+        <div class="card-body">
+
+            <div th:if="${errorMessage}"
+                 class="alert alert-danger alert-dismissible">
+                <button type="button" class="close"
+                        data-dismiss="alert">&times;</button>
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <!-- CRIAR -->
+            <form th:if="${counselingId == null}"
+                  th:action="@{/counselings/save}"
+                  th:object="${counselingDTO}"
+                  method="post">
+
+                <!-- Atendimento -->
+                <div class="form-group">
+                    <label>Atendimento
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <div th:if="${selectedAttendance == null}">
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control"
+                                   value="Nenhum atendimento seleccionado"
+                                   readonly>
+                            <div class="input-group-append">
+                                <a th:href="@{/counselings/select-attendance}"
+                                   class="btn btn-outline-primary">
+                                    <i class="fas fa-search mr-1"></i>
+                                    Escolher
+                                </a>
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            Pesquise por nome do paciente
+                        </small>
+                    </div>
+
+                    <div th:if="${selectedAttendance != null}">
+                        <input type="hidden"
+                               th:field="*{attendanceId}">
+                        <div class="input-group">
+                            <input type="text"
+                                   class="form-control"
+                                   th:value="${selectedAttendance.patientName} + ' — ' + ${#temporals.format(selectedAttendance.attendanceDate, 'dd/MM/yyyy')}"
+                                   readonly>
+                            <div class="input-group-append">
+                                <a th:href="@{/counselings/select-attendance}"
+                                   class="btn btn-outline-secondary">
+                                    <i class="fas fa-exchange-alt mr-1"></i>
+                                    Alterar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data -->
+                <div class="form-group">
+                    <label>Data
+                        <span class="text-danger">*</span>
+                    </label>
+                    <input type="date"
+                           class="form-control"
+                           th:field="*{date}"
+                           required>
+                </div>
+
+                <!-- Descrição -->
+                <div class="form-group">
+                    <label>Descrição
+                        <span class="text-danger">*</span>
+                    </label>
+                    <textarea class="form-control"
+                              th:field="*{description}"
+                              rows="5"
+                              placeholder="Descreva o aconselhamento"
+                              required>
+                    </textarea>
+                    <small class="text-muted">
+                        Máximo 500 caracteres
+                    </small>
+                </div>
+
+                <div class="card-footer px-0">
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="fas fa-save mr-1"></i>
+                        Guardar
+                    </button>
+                    <a th:href="@{/counselings}"
+                       class="btn btn-secondary ml-2">
+                        <i class="fas fa-times mr-1"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+
+            <!-- EDITAR -->
+            <form th:if="${counselingId != null}"
+                  th:action="@{/counselings/{id}/update(id=${counselingId})}"
+                  th:object="${counselingDTO}"
+                  method="post">
+
+                <!-- Info do atendimento -->
+                <div th:if="${counseling != null}"
+                     class="callout callout-info mb-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Paciente:</strong>
+                            <span th:text="${counseling.patientName}"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Médico:</strong>
+                            <span th:text="${counseling.doctorName}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data -->
+                <div class="form-group">
+                    <label>Data
+                        <span class="text-danger">*</span>
+                    </label>
+                    <input type="date"
+                           class="form-control"
+                           th:field="*{date}"
+                           required>
+                </div>
+
+                <!-- Descrição -->
+                <div class="form-group">
+                    <label>Descrição
+                        <span class="text-danger">*</span>
+                    </label>
+                    <textarea class="form-control"
+                              th:field="*{description}"
+                              rows="5"
+                              placeholder="Descreva o aconselhamento"
+                              required>
+                    </textarea>
+                    <small class="text-muted">
+                        Máximo 500 caracteres
+                    </small>
+                </div>
+
+                <div class="card-footer px-0">
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="fas fa-save mr-1"></i>
+                        Actualizar
+                    </button>
+                    <a th:href="@{/counselings}"
+                       class="btn btn-secondary ml-2">
+                        <i class="fas fa-times mr-1"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</th:block>
+</html>

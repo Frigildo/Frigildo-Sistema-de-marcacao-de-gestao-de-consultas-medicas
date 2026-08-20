@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Dashboard',
+          pageTitle='Dashboard',
+          activeMenu='dashboard',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+
+    <!-- ─────────────────────────────────── -->
+    <!-- LINHA 1 — Cards principais          -->
+    <!-- ─────────────────────────────────── -->
+    <div class="row">
+
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-gradient-info">
+                <div class="inner">
+                    <h3 th:text="${totalPatients}">0</h3>
+                    <p>Pacientes</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-procedures"></i>
+                </div>
+                <a th:href="@{/patients}"
+                   class="small-box-footer">
+                    Ver todos
+                    <i class="fas fa-arrow-circle-right ml-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-gradient-success">
+                <div class="inner">
+                    <h3 th:text="${totalDoctors}">0</h3>
+                    <p>Médicos</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <a th:href="@{/doctors}"
+                   class="small-box-footer">
+                    Ver todos
+                    <i class="fas fa-arrow-circle-right ml-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-gradient-warning">
+                <div class="inner">
+                    <h3 th:text="${consultationsToday}">0</h3>
+                    <p>Consultas Hoje</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-calendar-day"></i>
+                </div>
+                <a th:href="@{/consultations}"
+                   class="small-box-footer">
+                    Ver todas
+                    <i class="fas fa-arrow-circle-right ml-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-gradient-danger">
+                <div class="inner">
+                    <h3 th:text="${totalAttendances}">0</h3>
+                    <p>Atendimentos</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-stethoscope"></i>
+                </div>
+                <a th:href="@{/attendances}"
+                   class="small-box-footer">
+                    Ver todos
+                    <i class="fas fa-arrow-circle-right ml-1"></i>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ─────────────────────────────────── -->
+    <!-- LINHA 2 — Acesso rápido            -->
+    <!-- ─────────────────────────────────── -->
+    <div class="card">
+        <div class="card-header border-0">
+            <h3 class="card-title">
+                <i class="fas fa-bolt mr-2 text-warning"></i>
+                Acesso Rápido
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+
+                <div class="col-md-2 col-sm-4 mb-3">
+                    <a th:href="@{/patients/new}"
+                       class="btn btn-outline-info btn-block py-4">
+                        <i class="fas fa-user-plus fa-2x mb-2 d-block"></i>
+                        <strong>Novo Paciente</strong>
+                    </a>
+                </div>
+
+                <div class="col-md-2 col-sm-4 mb-3">
+                    <a th:href="@{/doctors/new}"
+                       class="btn btn-outline-success btn-block py-4">
+                        <i class="fas fa-user-md fa-2x mb-2 d-block"></i>
+                        <strong>Novo Médico</strong>
+                    </a>
+                </div>
+
+                <div class="col-md-2 col-sm-4 mb-3">
+                    <a th:href="@{/consultations/new}"
+                       class="btn btn-outline-warning btn-block py-4">
+                        <i class="fas fa-calendar-plus fa-2x mb-2 d-block"></i>
+                        <strong>Nova Consulta</strong>
+                    </a>
+                </div>
+
+                <div class="col-md-2 col-sm-4 mb-3">
+                    <a th:href="@{/attendances/new}"
+                       class="btn btn-outline-danger btn-block py-4">
+                        <i class="fas fa-stethoscope fa-2x mb-2 d-block"></i>
+                        <strong>Novo Atendimento</strong>
+                    </a>
+                </div>
+
+                <div class="col-md-2 col-sm-4 mb-3">
+                    <a th:href="@{/agenda}"
+                       class="btn btn-outline-primary btn-block py-4">
+                        <i class="fas fa-calendar-alt fa-2x mb-2 d-block"></i>
+                        <strong>Gerir Agenda</strong>
+                    </a>
+                </div>
+
+                <div class="col-md-2 col-sm-4 mb-3">
+                    <a th:href="@{/users/new}"
+                       class="btn btn-outline-secondary btn-block py-4">
+                        <i class="fas fa-user-plus fa-2x mb-2 d-block"></i>
+                        <strong>Novo Utilizador</strong>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</th:block>
+</html>

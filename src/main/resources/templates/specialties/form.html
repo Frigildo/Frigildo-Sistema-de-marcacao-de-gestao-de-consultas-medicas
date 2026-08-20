@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: base(
+          title='Especialidade',
+          pageTitle=${specialtyId != null} ? 'Editar Especialidade' : 'Nova Especialidade',
+          activeMenu='specialties',
+          content=~{::content})}">
+
+<th:block th:fragment="content">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title"
+                th:text="${specialtyId != null} ?
+                    'Editar Especialidade' :
+                    'Nova Especialidade'">
+            </h3>
+        </div>
+        <div class="card-body">
+
+            <div th:if="${errorMessage}"
+                 class="alert alert-danger alert-dismissible">
+                <button type="button" class="close"
+                        data-dismiss="alert">&times;</button>
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <!-- CRIAR -->
+            <form th:if="${specialtyId == null}"
+                  th:action="@{/specialties/save}"
+                  th:object="${specialtyDTO}"
+                  method="post">
+
+                <div class="form-group">
+                    <label>Nome <span class="text-danger">*</span></label>
+                    <input type="text"
+                           class="form-control"
+                           th:field="*{name}"
+                           placeholder="Nome da especialidade"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <textarea class="form-control"
+                              th:field="*{description}"
+                              rows="3"
+                              placeholder="Descrição da especialidade">
+                    </textarea>
+                </div>
+
+                <div class="card-footer">
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="fas fa-save mr-1"></i>
+                        Salvar
+                    </button>
+                    <a th:href="@{/specialties}"
+                       class="btn btn-secondary ml-2">
+                        <i class="fas fa-times mr-1"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+
+            <!-- EDITAR -->
+            <form th:if="${specialtyId != null}"
+                  th:action="@{/specialties/{id}/update(id=${specialtyId})}"
+                  th:object="${specialtyDTO}"
+                  method="post">
+
+                <div class="form-group">
+                    <label>Nome <span class="text-danger">*</span></label>
+                    <input type="text"
+                           class="form-control"
+                           th:field="*{name}"
+                           placeholder="Nome da especialidade"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <textarea class="form-control"
+                              th:field="*{description}"
+                              rows="3"
+                              placeholder="Descrição da especialidade">
+                    </textarea>
+                </div>
+
+                <div class="card-footer">
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="fas fa-save mr-1"></i>
+                        Actualizar
+                    </button>
+                    <a th:href="@{/specialties}"
+                       class="btn btn-secondary ml-2">
+                        <i class="fas fa-times mr-1"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</th:block>
+</html>
