@@ -57,12 +57,12 @@ public class DataSeeder {
 			// ─────────────────────────────────────
 			// USERS
 			// ─────────────────────────────────────
-			User userAdmin = new User("admin@hospital.com", passwordEncoder.encode("111111"), Profile.ADMINISTRADOR);
-			User userDoctor1 = new User("dr.silva@hospital.com", passwordEncoder.encode("111111"), Profile.MEDICO);
-			User userDoctor2 = new User("dr.costa@hospital.com", passwordEncoder.encode("111111"), Profile.MEDICO);
-			User userPatient1 = new User("joao@gmail.com", passwordEncoder.encode("111111"), Profile.PACIENTE);
-			User userPatient2 = new User("maria@gmail.com", passwordEncoder.encode("111111"), Profile.PACIENTE);
-			User userPatient3 = new User("pedro@gmail.com", passwordEncoder.encode("111111"), Profile.PACIENTE);
+			User userAdmin = new User("admin@gmail.com", passwordEncoder.encode("111111"), Profile.ADMINISTRADOR);
+			User userDoctor1 = new User("dr1@gmail.com", passwordEncoder.encode("111111"), Profile.MEDICO);
+			User userDoctor2 = new User("dr2@gmail.com", passwordEncoder.encode("111111"), Profile.MEDICO);
+			User userPatient1 = new User("paciente1@gmail.com", passwordEncoder.encode("111111"), Profile.PACIENTE);
+			User userPatient2 = new User("paciente2@gmail.com", passwordEncoder.encode("111111"), Profile.PACIENTE);
+			User userPatient3 = new User("paciente3@gmail.com", passwordEncoder.encode("111111"), Profile.PACIENTE);
 
 			userRepository.save(userAdmin);
 			userRepository.save(userDoctor1);

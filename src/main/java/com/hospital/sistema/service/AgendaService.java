@@ -64,7 +64,7 @@ public class AgendaService {
 		Doctor doctor = doctorRepository.findById(doctorId)
 				.orElseThrow(() -> new ResourceNotFoundException("Médico não encontrado!"));
 
-		if (dto.getEndTime().isBefore(dto.getStartTime())) {
+		if (!dto.getEndTime().isAfter(dto.getStartTime())) {
 			throw new RuntimeException("Hora de fim deve ser depois " + "da hora de início!");
 		}
 
