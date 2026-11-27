@@ -53,9 +53,9 @@ Todas com a palavra-passe `111111`. **São apenas dados de teste.**
 
 | Perfil | Email |
 |---|---|
-| Administrador | admin@hospital.com |
-| Médico | dr.silva@hospital.com, dr.costa@hospital.com |
-| Paciente | joao@gmail.com, maria@gmail.com, pedro@gmail.com |
+| Administrador | admin@gmail.com |
+| Médico | dr1@gmail.com, dr2@gmail.com |
+| Paciente | paciente1@gmail.com, paciente2@gmail.com, paciente3@gmail.com |
 
 ## Limitações e trabalho futuro
 
@@ -91,6 +91,6 @@ cd Frigildo-Sistema-de-marcacao-de-gestao-de-consultas-medicas
 ./mvnw spring-boot:run
 ```
 
-Then open **http://localhost:8080**. Demo accounts (test data only, password `111111`): `admin@hospital.com`, `dr.silva@hospital.com`, `joao@gmail.com`.
+Then open **http://localhost:8080**. Demo accounts (test data only, password `111111`): `admin@gmail.com`, `dr1@gmail.com`, `paciente1@gmail.com`.
 
 **Limitations and next steps:** in-memory database (MySQL or PostgreSQL persistence is the natural next step); automated tests (JUnit and Mockito) still to be written.
